@@ -1,0 +1,233 @@
+\ProvidesPackage{preamble}
+%%%%%%%
+%%%%%%% Packages 
+%%%%%%%
+\usepackage[dvipsnames]{xcolor}
+
+% For diagrams
+\usepackage{tikz-cd}
+
+% For references
+% \usepackage[round]{natbib}
+% \bibliographystyle{rusnat}
+\usepackage[style=apa]{biblatex}
+\addbibresource{references.bib}
+
+% For math symbols
+\usepackage{amsmath, amsfonts, amssymb, amsthm, mathtools}
+
+% For lists
+\usepackage{enumerate}
+% For additional caligraphic letters
+%\usepackage{mathrsfs}
+
+% For tables
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage{array} % fixes lengths
+\renewcommand{\arraystretch}{0.8}
+
+% For crossed text
+\usepackage{soul}
+
+% For bold math 
+\usepackage{bm}
+
+% For better tables
+\usepackage{booktabs} 
+ 
+% For margin
+\usepackage{geometry}
+ \geometry{
+ a4paper, 
+ total={150mm,237mm},
+ left=30mm, 
+ top=30mm, 
+ }
+
+% For figures 
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{nicefrac}
+
+% To define custom margin "locally"
+\usepackage{scrextend}
+
+% For footnote without numbers
+\newcommand\blfootnote[1]{%
+  \begingroup
+  \renewcommand\thefootnote{}\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \endgroup 
+}
+
+\usepackage{setspace}                                                   
+\doublespacing  
+
+% Section header style (large font + small caps)
+\usepackage{titlesec}
+\titleformat{\section}[hang]{\large\scshape}{\thesection.}{1em}{}
+
+% For hyper-references
+\usepackage[colorlinks=true, linkcolor=red, urlcolor=blue, citecolor=blue]{hyperref}
+
+% Define THM classes
+\newtheoremstyle{mytheoremstyle} % name
+    {0.3cm}                      % Space above
+    {0cm}                        % Space below
+    {\itshape}                   % Body font
+    {}                           % Indent amount
+    {\scshape}                   % Theorem head font
+    {: }                          % Punctuation after theorem head
+    {0em}                       % Space after theorem head
+    {}  % Theorem head spec (can be left empty, meaning normal)
+
+\theoremstyle{mytheoremstyle}
+\newtheorem{Theorem}{Theorem}
+\newtheorem{Proposition}{Proposition}
+\newtheorem{Lemma}{Lemma}
+\newtheorem{Corollary}{Corollary}
+\newtheorem{Algorithm}{Algorithm}
+\newcommand{\indep}{\perp \!\!\! \perp}
+% Fixed proof env
+\renewenvironment{proof}{{\noindent \sc Proof:}}{\qed}
+
+% Define example and remark style
+\newtheoremstyle{myExampleRemarkstyle} % name
+    {0.3cm}                    % Space above
+    {0cm}                           % Space below
+    {\itshape}                   % Body font
+    {}                           % Indent amount
+    {\scshape}                   % Theorem head font
+    {: }                          % Punctuation after theorem head
+    {0em}                       % Space after theorem head
+    {}  % Theorem head spec (can be left empty, meaning normal)
+
+\theoremstyle{myExampleRemarkstyle}
+\newtheorem{Example}{Example} 
+\newtheorem{Remark}{Remark}
+\newtheorem{Assumption}{Assumption}
+
+% Renew numbering
+\renewcommand{\theRemark}{\Alph{Remark}}
+\renewcommand{\theAssumption}{\Alph{Assumption}}
+
+% Define simu style
+\newtheoremstyle{simuStyle}
+{0.3cm} % Space above
+{0cm} % Space below
+{} % Body font
+{} % Indent amount
+{\bfseries} % Theorem head font
+{.} % Punctuation after theorem head
+{0em} % Space after theorem head
+{} % Theorem head spec (can be left empty, meaning `normal')
+
+\theoremstyle{simuStyle} 
+\newtheorem{Simulation}{Simulation}[section]
+
+% Define simu style
+\newtheoremstyle{stratStyle}
+{0.3cm} % Space above
+{0cm} % Space below
+{} % Body font
+{} % Indent amount
+{\scshape} % Theorem head font
+{: } % Punctuation after theorem head
+{0em} % Space after theorem head
+{} % Theorem head spec (can be left empty, meaning `normal')
+
+\theoremstyle{stratStyle} 
+\newtheorem{Strategy}{Strategy}
+
+% Define some set of real number -> \real
+\DeclareSymbolFont{lettersA}{U}{txmia}{m}{it}
+\DeclareMathSymbol{\real}{\mathord}{lettersA}{"92}
+\DeclareMathSymbol{\field}{\mathord}{lettersA}{"83}
+
+
+
+
+%%%%%%%
+%%%%%%% Math - definitions
+%%%%%%%
+% Real numbers
+\def\real{{\rm I\!R}}
+
+% Transpose
+\def\tt{^{\rm T}}
+
+% Argmin 
+\DeclareMathOperator*{\argmin}{argmin}
+
+% Rank
+\DeclareMathOperator*{\rank}{rank}
+
+% Trace
+\DeclareMathOperator*{\tr}{tr}
+
+% Interior
+\DeclareMathOperator*{\Int}{Int}
+
+% Covariance
+\DeclareMathOperator*{\cov}{cov}
+
+% Bold 0 vector
+\def\0{{\bf 0}}
+
+% Bold greek - vector
+\def\bt{{\bm{\theta}}}
+\def\bto{{\bt_0}}
+\def\hbt{{\hat{\bt}}}
+\def\bmu{{\bm{\mu}}}
+\def\bpi{{\bm{\pi}}}
+\def\beps{{\bm{\epsilon}}}
+\def\bb{{\bm{\beta}}}
+\def\hbb{{\hat{\bb}}}
+\def\bl{{\bm{\lambda}}}
+\def\hbl{{\hat{\bl}}}
+\def\tPsi{{\widetilde{\Psi}}}
+
+
+% Bold greek (matrix)
+\def\bO{{\bm{\Omega}}}
+\def\bL{{\bm{\Lambda}}}
+\def\bH{\boldsymbol{H}}
+
+% Bold letters
+\def\X{{\bf X}}
+\def\x{{\bf x}}
+\def\I{{\bf I}}
+\def\Y{{\bf Y}}
+\def\y{{\bf y}}
+\def\A{{\bf A}}
+\def\B{{\bf B}}
+\def\V{{\bf V}}
+\def\Z{{\bf Z}}
+\def\z{{\bf z}}
+
+% Custom - lambda__max/min
+\def\lm{\lambda_{\max}}
+\def\lmin{\lambda_{\min}}
+
+% Math operators
+\DeclareMathOperator*{\E}{{\mathbb{E}}} 
+\DeclareMathOperator*{\mean}{mean} 
+\DeclareMathOperator*{\var}{var}  
+\DeclareMathOperator*{\corr}{corr} 
+\DeclareMathOperator*{\argmax}{argmax}
+\DeclareMathOperator*{\argzero}{argzero}
+\DeclareMathOperator*{\plim}{plim}   
+\DeclareMathOperator*{\card}{card} 
+\DeclareMathOperator*{\diag}{diag}
+\DeclareMathOperator*{\IF}{IF}
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+
+% Distributions
+\def\Normal{{\mathcal{N}}}
+
+%%%%%%% COMMENTS 
+\def\boxit#1{\vbox{\hrule\hbox{\vrule\kern3pt
+          \vbox{\kern3pt#1\kern3pt}\kern3pt\vrule}\hrule}}
+\def\gbcomment#1{\vskip0mm\boxit{\vskip 0mm{\color{pinegreen}\bf#1}
+{\color{pinegreen}\bf -- GB\vskip 1mm}}\vskip 0mm}

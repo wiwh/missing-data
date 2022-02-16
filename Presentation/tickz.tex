@@ -1,0 +1,23 @@
+\documentclass{article} 
+\usepackage{tikz}
+\usetikzlibrary{bayesnet}
+\usetikzlibrary{arrows}
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\begin{document}
+\begin{figure}
+  \tikz{
+    % nodes
+     \node[obs] (x) {$x_i$};%
+     \node[latent,above=of x,xshift=-1cm] (mu) {$\mu$}; %
+     \node[latent,above=of x] (r) {$r$}; %
+     \node[latent,above=of x,xshift=1cm] (sigma) {$\sigma$}; %
+    % plate
+     \plate [inner sep=.3cm,xshift=.02cm,yshift=.2cm] {plate1} {(x)} {$i$ data}; %
+    % edges
+     \edge {r,sigma,mu} {x}  }
+\end{figure}
+
+\end{document}
