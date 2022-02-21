@@ -19,32 +19,39 @@ An advantage of using a GLLVM, apart from the fact that it allows to model many 
 
 \section{Mathematical Setup}
 Following \textcite{little_statistical_2019}, we denote the complete data matrix  by the matrix $Y=(y_{ij})$, and denote by the random matrix $M \in \{0, 1\}^{n\times d} = (m_{ij})$ the missing-data pattern, where, for all $i=1, \dots, n$ and $j=1,  \dots, d$,  $m_{ij}$ takes value $1$ if $y_{ij}$ is missing (NA), and $0$ otherwise. The missingness mechanism is characterized by the conditional distribution of $m_i$ given $x_i$, with density $f_{M|Y}(m_i|y_i, \phi)$ where $\phi$ denotes unknown parameters. In what follows, we will use a GLLVM to model this distribution.
+Let $F_\bt$ be a model of the data parameterized by $\bt\in\bm\Theta$.
 
 
 
 \section{Estimation with Known Missingness Mechanism}
-We propose to model the multivariate data using a generative model, factor analysis. 
+We propose to model the multivariate data using exploratory factor analysis (EFA). Suppose that $Y_1, Y_2, \dots, Y_p$ have a $p$-variate normal distribution with mean $\bm\mu = (\mu_1, \dots, \mu_p)$ and covariance matrix $\bm\Sigma =(\sigma_{jk})$. We write $\Y = (\Y_{(0)}, \Y_{(1)})$, where $\Y$ represents a random sample of size $n$ on $(Y_1, \dots, Y_p)$, $\Y_{(0)}$ the set of observed values, and $\Y_{(1)}$ the missing data. For $i=1, \dots, n$, denote by $\y_{(0), i}$ the set of variables with values observed for unit $i$.
 
 \begin{figure}
 \centering
     \tikz{
     % nodes
-    \node[obs] (Yobs) {$\underset{[p]}{\boldsymbol Y}$};%
-    \node[latent,above=of Yobs] (Z) {$\underset{[q]}{\boldsymbol Z}$}; %
-    \node[const,left = of Z] (parY) {$\boldsymbol \Lambda, \boldsymbol\mu, \boldsymbol \psi$}; %
+    \node[obs] (Yobs1) {$Y_1$};%
+    \node[const, right=of Yobs1, xshift=-0.5cm](dots) {$\dots$};%
+    \node[obs, right=of dots, xshift=-0.5cm] (Yobsp) {$Y_p$};%
+    \node[latent,above=of dots] (Z) {$\underset{[q]}{\boldsymbol Z}$}; %
+    \node[const,left = of Z, xshift = -.5cm] (parY1) {$\boldsymbol \Lambda_{1\cdot}, \mu_1,  \psi_1$}; %
+    \node[const,right = of Z, xshift = .5cm] (parYp) {$\boldsymbol \Lambda_{p\cdot}, \mu_p,  \psi_p$}; %
     % plate
-    \plate [inner sep=.3cm,xshift=.02cm,yshift=.2cm] {plate1} {(Z)(Yobs)} {$n$}; %
+    \plate [inner sep=.3cm,xshift=.02cm,yshift=.2cm] {plate1} {(Z)(Yobs1)(dots)(Yobsp)} {$n$}; %
     % edges
-    \edge{Z,parY}{Yobs};
+    \edge{Z,parY1}{Yobs1};
+    \edge{Z,parYp}{Yobsp};
     }
-\caption{Generative model of the data.}
+\caption{Generative model of the data: factor analysis.}
 \end{figure}
-    
-    
 
+To estimate the parameter $\bm\Lambda, \bm\mu,\bm\psi$, we propose to impute the missing variables by their observed average and estimate the model by maximum likelihood. Unless the data are MCAR, this will in general result in a biased estimator. We propose  Denote the estimator as a function of the data $Y$. 
 
+\begin{equation}
+    \widehat\bpi(Y)
+\end{equation}
 
-When the missingness mechanism is known, we propose to estimate the model parameters.
+When the missingness mechanism is known, we propose to estimate the model parameters 
 
 \subsection{Modelling the mechanism}
 In this section, we largely follow the notations and exposition of \textcite{sportisse_imputation_2020}.
