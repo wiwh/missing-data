@@ -2184,10 +2184,12 @@
   <bcf:section number="0">
     <bcf:citekey order="1">sportisse_imputation_2020</bcf:citekey>
     <bcf:citekey order="3">skrondal_generalized_2004</bcf:citekey>
-    <bcf:citekey order="4">little_statistical_2019</bcf:citekey>
-    <bcf:citekey order="6">sportisse_imputation_2020</bcf:citekey>
+    <bcf:citekey order="4">gourieroux_indirect_1993</bcf:citekey>
+    <bcf:citekey order="5">gallant_which_1996</bcf:citekey>
+    <bcf:citekey order="6">little_statistical_2019</bcf:citekey>
     <bcf:citekey order="8">sportisse_imputation_2020</bcf:citekey>
-    <bcf:citekey order="9">sportisse_imputation_2020</bcf:citekey>
+    <bcf:citekey order="10">sportisse_imputation_2020</bcf:citekey>
+    <bcf:citekey order="11">sportisse_imputation_2020</bcf:citekey>
   </bcf:section>
   <!-- SORTING TEMPLATES -->
   <bcf:sortingtemplate name="nty">

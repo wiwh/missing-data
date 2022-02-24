@@ -64,18 +64,21 @@ par_to_theta <- function(A, psi, mu){
   c(as.vector(A), psi, mu)
 }
 
-# Y is a list with Y$Y the complete data, Y$M the mask.
+# dat is a list with data elements that will be the first argument of estimator
 # estimator must take a list named Y as first parameter, the rest in est.args.
 # generator must take theta, a vector, as first parameter, the rest in gen.args
-ib <- function(Y, estimator, generator, theta.init=NULL, H=1, step=0.1, maxit=100, gen.args=list(), est.args=list(), seed=12451, verbose=F, save=F){
-  target <- theta <- do.call(estimator, c(list(Y=Y), est.args))
+ib <- function(dat, estimator, generator, theta.init=NULL, H=1, step=0.1, maxit=100, gen.args=list(), est.args=list(), seed=12451, verbose=F, save=F){
+  target <- theta <- do.call(estimator, c(list(dat=dat), est.args))
   if(!is.null(theta.init)) theta <- theta.init
-  if(save) hist <- matrix(0, maxit, length(target))
-  for(i in 1:maxit){
+  if(save){
+    hist <- matrix(0, maxit, length(target))
+    hist[1,] <- theta
+  }
+  for(i in 2:maxit){
     exp <- lapply(1:H, function(h){
       set.seed(seed+h)
-      Y <- do.call(generator, c(list(theta=theta), gen.args))
-      est <- do.call(estimator, c(list(Y=Y), est.args))
+      dat.gen <- do.call(generator, c(list(theta=theta), gen.args))
+      est <- do.call(estimator, c(list(dat=dat.gen), est.args))
       est
     })
     exp <- Reduce("+", exp)/length(exp)

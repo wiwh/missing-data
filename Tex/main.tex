@@ -13,15 +13,67 @@
 \begin{document}
 \maketitle
 \section{Introduction}
-In this work, we propose a model for missing not at random (MNAR) data in a multivariate settings. Following \textcite{sportisse_imputation_2020}, we consider two settings: in the first, we model the joint density of the data together with the missing data ``mask''; in the second, the mask is concatenated to the data: the density of the resulting augmented data is then modeled. In both cases, we propose a generalized linear latent variable model (GLLVM, \cite{skrondal_generalized_2004}) to model the missingness mechanism. A GLLVM is an extension of factor analysis to accommodate responses within the exponential family, for instance binary responses; what's more, covariates information can also be incorporated. Similarly to factor analysis, it is assumed that a low-dimensional random variable, called the ``latent'' variable, explains the dependence within the data. By estimating the latent variables, one can thus perform dimension reduction. Such models are driven by the assumption that, conditional on the latent variable, the data are assumed independent. For instance, for setting 2, the data can be modeled as (conditional) independent Gaussian random variables, and the concatenated mask can be modeled as (conditional) Bernoulli independent random variables; by this conditional independence, the conditional density is simplified considerably.
+In this work, we propose a model for missing not at random (MNAR) data in a multivariate settings. Following \textcite{sportisse_imputation_2020}, we consider two settings: in the first, we model the joint density of the data together with the missing data ``mask''; in the second, the mask is concatenated to the data: the density of the resulting augmented data is then modeled. In both cases, we propose a generalized linear latent variable model (GLLVM, \cite{skrondal_generalized_2004}) to model the missingness mechanism. A GLLVM is an extension of factor analysis to accommodate responses within the exponential family, for instance binary responses; what's more, covariates information can also be incorporated. Similarly to factor analysis, it is assumed that a low-dimensional random variable, called the ``latent'' variable, explains the dependence within the data. For instance, for setting 2, the data can be modeled as (conditional) independent Gaussian random variables, and the concatenated mask can be modeled as (conditional) Bernoulli independent random variables; by this conditional independence, the conditional density is simplified considerably. By estimating the latent variables, one can thus perform dimension reduction. 
 
 An advantage of using a GLLVM, apart from the fact that it allows to model many types of responses, including the binary random variables that comprise the mask, is that it is a generative model (which may be advantageous for multiple imputation techniques?), and that its parameters are ``almost'' identifiable (up to a rotation, similarly to factor analysis). Should it be of interest, then, one could test for the significance of the loadings, in order to better understand the nature of the missingness mechanism in a particular application.
 
-These models, even with the presence of missing variables, can be estimated by (Monte-Carlo) EM. However, this latter requires draws from the posterior distribution of the latent/unobserved variables given the observed, which may be difficult. Instead of the EM, we propose an indirect inference (\cite{gourieroux_indirect_1993}, \cite{gallant_which_1996}) approach to estimate the parameters of the model.
+These models, even with the presence of missing variables, can in principle be estimated by (Monte-Carlo) EM. However, this latter requires draws from the posterior distribution of the latent/unobserved variables given the observed, which may be difficult to obtain (possible methods include Metropolis-Hastings and Sampling Importance Resampling). Instead of the EM, we propose a method inspired by indirect inference (\cite{gourieroux_indirect_1993}, \cite{gallant_which_1996}) to estimate the parameters of the model.
 
 \section{Mathematical Setup}
-Following \textcite{little_statistical_2019}, we denote the complete data matrix  by the matrix $Y=(y_{ij})$, and denote by the random matrix $M \in \{0, 1\}^{n\times d} = (m_{ij})$ the missing-data pattern, where, for all $i=1, \dots, n$ and $j=1,  \dots, d$,  $m_{ij}$ takes value $1$ if $y_{ij}$ is missing (NA), and $0$ otherwise. The missingness mechanism is characterized by the conditional distribution of $m_i$ given $y_i$, with density $f_{M|Y}(m_i|y_i, \phi)$ where $\phi$ denotes unknown parameters. In what follows, we will use a GLLVM to model this distribution.
 
+Let $(Y, X)$ be random variables with $Y=(Y_i, 1 \leq i\leq n)$ an $n$-vector of binary responses coded as $\{0, 1\}$, and $X = (X_{ij}, 1 \leq i \leq n, 1 \leq j \leq p)$ an $n\times p$ design matrix of random covariates with i\textsuperscript{th} row $X_i$, where $X_{ij}$ takes values in $\mathbb R$. For all $i$, $Y_i$ follows a Bernoulli distribution with parameter $\pi_{i} \vcentcolon = 1/(1+\exp(- \beta_0 + X_i^\top \beta))$, and $X_i$ is multivariate normal with mean $\mu_i$ and variance-covariance $\Sigma$. For $i, i'=1, \dots, n$, we also assume the elements of any 
+pair $(Y_i, Y_{i'})$ and $(X_i, X_{i'})$ to be independent whenever $i\neq i'$.
+
+For each individual $i$, we denote by $X_{i, \text{obs}}$ the elements of $X_i$ that are observed and $X_{i, \text{mis}}$ those that are missing. We also decompose the design matrix as $X=(X_{\text{obs}}, X_{\text{mis}})$.
+
+Similarly, we denote by $(y, x)$ the data sample, where we recycle the notations defined previously: $x$ can thus be decomposed as  $x=(x_{\text{obs}}, x_{\text{mis}})$,  and $x_{i, \text{obs}}$, $x_{i, \text{mis}}$ denote the observed and missing data elements of the sample design matrix. In this paper, we consider the data to be missing at random. 
+
+Following \textcite{little_statistical_2019}, we denote by the random matrix $M \in \{0, 1\}^{n\times d} = (M_{ij})$ the missing-data pattern, where, for all $i=1, \dots, n$ and $j=1,  \dots, d$,  $M_{ij}$ takes value $1$ if $Y_{ij}$ is missing (NA), and $0$ otherwise. The missingness mechanism is characterized by the conditional distribution of $M_i$ given $Y_i$, with density $f_{M|Y}(m_i|y_i, \phi)$ where $\phi$ denotes unknown parameters. In this paper, we assume a missing at random (MAR) mechanism, which implies the missing value mechanism can be ignored (i.e., does not need to be modeled explicitely). 
+
+We will consider two imputation strategies:
+\begin{enumerate}
+    \item imputation by the mean
+    \item imputation by the maximum a posteriori estimate of $X_{mis}|X_{obs}$, which we obtain "for free" by drawing data
+\end{enumerate}
+
+
+\section{Indirect Inference}
+Let $i(X, M)$ be an imputation function that returns $X_{imp}$, where values have been imputed wherever $m_{ij} = 1$. 
+
+In this part, we show, by means of simulations, how indirect inference can be used (...) in lieu of difficult Expectation-maximization algorithms.
+
+\subsection{Indirect Inference Estimation whith Ignorable Missingness Mechanism}
+
+
+
+
+The example is logistic regression. We need a generative model for $X_{mis}$, we thus adopt a probabilistic framework:
+
+TODO: cite Josse propose an EM algorithm to estimate the model parameters. However, difficulties abound when computing the expectation with respect to the posterior distribution. They propose a stochastic-approximation EM, where each step involve a Metropolis Hastings markov chain monte carlo procedure. 
+
+Our estimator bypass these difficulties, to an extent. They still involve.   First, the imputation can 
+
+TODO: define $X_{mis}$, $X_{obs}$.
+TODO: say that we focus on ignorable mechanisms and so MAR.
+
+Let $\widehat\bpi$ be the estimator of interest, and $i(Y, X_{obs})$ the imputation mechanism and let $y_{imp} \vcentcolon= i(y, x_{obs})$
+
+
+\begin{align*}
+    \widehat\bt &= \argzero \widehat\bpi(i(y, x_{obs}))- \mathbb E_{Y|X_{obs}}\left[\widehat\bpi(i(Y, X_{obs}))\large|X_{obs}\right]\\
+    \widehat\bt &= \argzero \widehat\bpi(i(y, x_{obs}))- \mathbb E_{X_{mis}|X_{obs}=x_{obs}}\left[\mathbb E_{Y|X_{obs}=x_{obs}, X_{mis}}\left[\widehat\bpi(i(Y, x_{obs}))\large|X_{obs}=x_{obs}, X_{mis}\right]\right]
+\end{align*}
+
+which is way easier to draw from than from the distribution of $X_{mis}|Y, X_{obs}$.
+
+
+Indeed, conditional on $X_{obs}$, the estimators admit a closed form. 
+
+Or, using my almost PQL definition (?) (maybe don't).
+
+$$
+\widehat\bt = \argzero \mathbb E_{Y|X_{obs}}\left[\widehat\bpi(i(Y, X_{obs}))|X_{obs}\right] - E_{X_{mis}}\left[E_{Y|X_{obs}, X_{mis}}\left[\widehat\bpi(i(Y, X_{obs}))\large|X_{obs}, X_{mis}\right]\right]
+$$
 
 
 \section{Estimation with Known Missingness Mechanism}
