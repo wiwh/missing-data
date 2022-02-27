@@ -1,5 +1,5 @@
 library(mvtnorm)
-source("R/adding-the-mask_functions.R")
+source("R/missing-data-functions.R")
 # Generating Conditional Multivariate Normal Random Variables
 # We reproduce results from Josse
 
@@ -98,20 +98,21 @@ C <- matrix(c(
 ), ncol=p, byrow=T)
 
 sigma <- 1:p
-mu0 <- 1:p
+mu <- 1:p
 
-Sigma0 <- diag(sigma) %*% C %*% diag(sigma)
+Sigma <- diag(sigma) %*% C %*% diag(sigma)
+args0 <- list(mu=mu, Sigma=Sigma)
 
-set.seed(21341231)
-args0 <- list(mu=mu0, Sigma=Sigma0)
-X <- rmvnorm(n, mean=mu0, sigma=Sigma0)
-Mask <- matrix(runif(n*p)<.1, n, p)
-dat <- list(X=X, M=Mask, theta=NULL)
+set.seed(213411)
+X <- rmvnorm(n, mean=args0$mu, sigma=args0$Sigma)
+M <- matrix(runif(n*p)<.1, n, p)
+dat <- list(X=X, M=M, theta=NULL)
 theta0 <- args_to_theta(args0)
 
 
-X2 <- generator(theta0, X, M, p)$X
+X2 <- generator(theta0, X, M=M, p)$X
 dat2 <- list(X=X2, M=M, theta=NULL)
+
 estimator(dat2, type="meanImpute")
 estimator(dat, type="meanImpute")
 
@@ -137,7 +138,8 @@ ts.plot(ib.theta$save)
 
 n <- 10000
 X <- rmvnorm(n, mean=mu, sigma=Sigma)
-M <- matrix(runif(n*p),n, p)<.01
+M <- matrix(runif(n*p),n, p)<.5
+
 X1 <- t(sapply(1:n, function(i){
   x <- X[i,]
   Msum <- sum(M[i,])
@@ -158,7 +160,3 @@ X2 <- t(sapply(1:n, function(i){
 
 plot(cov(X), cov(X1)); abline(0,1,col=2)
 points(cov(X), cov(X2),col=2)
-
-
-
-X2 <- t(apply(X, 1, function(xi) rmvnorm(1, xi, Sigma/2)))

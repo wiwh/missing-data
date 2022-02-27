@@ -65,29 +65,79 @@ par_to_theta <- function(A, psi, mu){
 }
 
 # dat is a list with data elements that will be the first argument of estimator
-# estimator must take a list named Y as first parameter, the rest in est.args.
-# generator must take theta, a vector, as first parameter, the rest in gen.args
-ib <- function(dat, estimator, generator, theta.init=NULL, H=1, step=0.1, maxit=100, gen.args=list(), est.args=list(), seed=12451, verbose=F, save=F){
+# estimator must take a list named dat as first parameter, the rest in est.args.
+ib <- function(dat, estimator, generator, theta.init=NULL, H=1, step=0.1, maxit=100, gen.args=list(), est.args=list(), seed=12451, verbose=F, save=T,
+               momentum=0, tol=1e-6, method="SA", method.args=list()){
   target <- theta <- do.call(estimator, c(list(dat=dat), est.args))
   if(!is.null(theta.init)) theta <- theta.init
+
   if(save){
     hist <- matrix(0, maxit, length(target))
     hist[1,] <- theta
   }
+  theta.avg.old <- theta
+
+  mom <- rep(0, length(theta))
+  delta <- rep(0, length(theta))
+  learning.rate <- 1
+
+  if(method=="SA"){
+    if(is.null(method.args$a)) method.args$a <- 40
+    if(is.null(method.args$A)) method.args$A <- .05*maxit
+    if(is.null(method.args$alpha)) method.args$alpha <- .8
+    if(is.null(method.args$b)) method.args$b <- 1
+
+  }
+
+
   for(i in 2:maxit){
+    delta.old <- delta
+    theta.old <- theta
+
     exp <- lapply(1:H, function(h){
-      set.seed(seed+h)
+      if(method=="SP") set.seed(seed+h)
       dat.gen <- do.call(generator, c(list(theta=theta), gen.args))
       est <- do.call(estimator, c(list(dat=dat.gen), est.args))
       est
     })
     exp <- Reduce("+", exp)/length(exp)
-    theta <- theta + step *(target - exp)
+
+    # update
+    if(method=="SA") learning.rate <- with(method.args, a/(b*i + 1 + A)**alpha)
+    cat("\n", i, " : ", learning.rate)
+    # compute the step
+    delta <- learning.rate * step* (target-exp)
+    theta <- theta + delta + mom
+    mom <- (mom + delta)*momentum
+
     theta[is.na(theta)] <- -Inf
-    cat(i, "\n", theta[c(1,6)])
     if(save) hist[i,] <- theta
+
+    if(i %% 10 == 0){
+      if(save){
+        theta.avg <- avg.last.iter(hist[1:i,], i/3)
+        crit <- sqrt(mean((theta.avg.old-theta.avg)**2))
+        theta.avg.old <- theta.avg
+      } else {
+        crit <- sqrt(mean((theta.old-theta)**2))
+      }
+      cat(" - ", crit)
+      if(crit < tol){
+        if(save) hist <- hist[1:i,]
+        break()
+      }
+    }
   }
-  list(theta=theta, target=target, save= if(save) hist else NULL)
+  # returns the average over the last 10% iterations
+  list(theta=theta, target=target, save= if(save) hist else NULL, theta.avg=if(save) avg.last.iter(hist, nrow(hist)/3))
+}
+
+# returns the average over  the last iterations
+
+avg.last.iter <- function(theta.hist, last.iter){
+  stopifnot(is.matrix(theta.hist))
+  last.iter <- min(nrow(theta.hist), last.iter)
+  colMeans(theta.hist[(nrow(theta.hist) + 1 - last.iter):nrow(theta.hist),, drop=F])
 }
 
 # #########################
