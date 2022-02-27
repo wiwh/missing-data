@@ -18,8 +18,9 @@ generator <- function(theta, n, p){
   # Generate X
   X <- mvtnorm::rmvnorm(n, mean=args$mu, sigma=args$Sigma)
   linpar <- cbind(1, X) %*% args$beta
-  Y <- rbinom(nrow(X),1, 1/(1+exp(-linpar)))
-  list(Y=Y, X=X)
+  mu <- 1/(1+exp(-linpar))
+  Y <- rbinom(nrow(X),1, mu)
+  list(Y=Y, X=X, linpar=linpar, mu=mu)
 }
 
 estimator.glm <- function(dat, M){
@@ -55,7 +56,7 @@ estimator.lm <- function(dat, M){
 }
 
 # simus
-n <- 10000
+n <- 1000
 p <- 5
 C <- matrix(c(
   1, 0.8, 0, 0, 0,
@@ -67,7 +68,7 @@ C <- matrix(c(
 
 mu <- 1:p
 
-sigma <- 1:p
+sigma <- runif(5)
 Sigma <- diag(sigma) %*% C %*% diag(sigma)
 beta <- c(-.2, .5, -.3, 1, 0, -.6)  # the first element is the intercept
 args0 <- list(beta=beta, mu=mu, Sigma=Sigma)
